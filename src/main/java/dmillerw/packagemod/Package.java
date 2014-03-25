@@ -3,6 +3,7 @@ package dmillerw.packagemod;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import dmillerw.packagemod.block.HandlerBlock;
 import dmillerw.packagemod.core.proxy.CommonProxy;
 import dmillerw.packagemod.item.HandlerItem;
 import dmillerw.packagemod.lib.ModInfo;
@@ -26,6 +27,7 @@ public class Package {
 		config.load();
 
 		HandlerItem.init(config);
+		HandlerBlock.init(config);
 
 		if (config.hasChanged()) {
 			config.save();

@@ -1,5 +1,6 @@
 package dmillerw.packagemod.block;
 
+import dmillerw.packagemod.block.tile.TilePackage;
 import dmillerw.packagemod.core.tab.CreativeTabPackage;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -19,7 +20,7 @@ public class BlockPackage extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world) {
-		return null;
+		return new TilePackage();
 	}
 
 }
