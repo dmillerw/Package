@@ -41,7 +41,7 @@ public abstract class TileCore extends TileEntity {
 		readFromNBT(packet.data);
 	}
 
-	protected void update() {
+	public void update() {
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 

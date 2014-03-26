@@ -32,6 +32,8 @@ public class Package {
 		if (config.hasChanged()) {
 			config.save();
 		}
+
+		proxy.renders();
 	}
 
 }
