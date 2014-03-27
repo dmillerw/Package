@@ -19,6 +19,21 @@ public class BlockPackage extends BlockContainer {
 	}
 
 	@Override
+	public boolean renderAsNormalBlock() {
+		return false;
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+
+	@Override
+	public int getRenderType() {
+		return -1;
+	}
+
+	@Override
 	public TileEntity createNewTileEntity(World world) {
 		return new TilePackage();
 	}
