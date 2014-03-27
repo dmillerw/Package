@@ -1,8 +1,8 @@
 package dmillerw.packagemod.block.tile;
 
 import dmillerw.packagemod.core.registry.AddressRegistry;
+import dmillerw.packagemod.lib.BlockCoord;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.ForgeDirection;
 
 /**
@@ -12,9 +12,11 @@ public class TileAddressLabel extends TileCore {
 
 	public String owner;
 
-	public ChunkCoordinates doormatLocation;
+	public BlockCoord doormatLocation;
 
 	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
+
+	private boolean registered = false;
 
 	@Override
 	public void readNBT(NBTTagCompound nbt) {
@@ -26,7 +28,7 @@ public class TileAddressLabel extends TileCore {
 
 		if (nbt.hasKey("doormat")) {
 			NBTTagCompound tag = nbt.getCompoundTag("doormat");
-			doormatLocation = new ChunkCoordinates(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+			doormatLocation = new BlockCoord(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
 		} else {
 			doormatLocation = null;
 		}
@@ -42,13 +44,22 @@ public class TileAddressLabel extends TileCore {
 
 		if (doormatLocation != null) {
 			NBTTagCompound tag = new NBTTagCompound();
-			tag.setInteger("x", doormatLocation.posX);
-			tag.setInteger("y", doormatLocation.posY);
-			tag.setInteger("z", doormatLocation.posZ);
+			tag.setInteger("x", doormatLocation.x);
+			tag.setInteger("y", doormatLocation.y);
+			tag.setInteger("z", doormatLocation.z);
 			nbt.setCompoundTag("doormat", tag);
 		}
 
 		nbt.setByte("orientation", (byte)orientation.ordinal());
+	}
+
+	@Override
+	public void updateEntity() {
+		if (!worldObj.isRemote) {
+			if (!registered) {
+				AddressRegistry.register(this);
+			}
+		}
 	}
 
 	@Override
@@ -66,9 +77,8 @@ public class TileAddressLabel extends TileCore {
 	}
 
 	public void onBreak() {
-		worldObj.setBlockToAir(doormatLocation.posX, doormatLocation.posY, doormatLocation.posZ);
+		worldObj.setBlockToAir(doormatLocation.x, doormatLocation.y, doormatLocation.z);
 
-		// Unregister
 		AddressRegistry.unregister(this);
 	}
 

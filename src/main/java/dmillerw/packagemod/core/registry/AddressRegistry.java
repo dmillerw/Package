@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class AddressRegistry {
 
-	public static Map<String, TileAddressLabel> map = new HashMap<String, TileAddressLabel>();
+	private static Map<String, TileAddressLabel> map = new HashMap<String, TileAddressLabel>();
 
 	public static void register(TileAddressLabel tile) {
 		map.put(tile.owner, tile);
@@ -20,8 +20,12 @@ public class AddressRegistry {
 		map.remove(tile.owner);
 	}
 
-	public static TileAddressLabel get(String address) {
-		return map.get(address);
+	public static boolean registered(String player) {
+		return map.containsKey(player);
+	}
+
+	public static TileAddressLabel get(String player) {
+		return map.get(player);
 	}
 
 }

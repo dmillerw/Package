@@ -1,7 +1,6 @@
 package dmillerw.packagemod.block;
 
 import dmillerw.packagemod.block.tile.TileAddressLabel;
-import dmillerw.packagemod.core.registry.AddressRegistry;
 import dmillerw.packagemod.core.tab.CreativeTabPackage;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -9,8 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import java.util.Map;
 
 /**
  * @author dmillerw
@@ -26,9 +23,7 @@ public class BlockAddressPanel extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float fx, float fy, float fz) {
 		if (!world.isRemote) {
-			for (Map.Entry<String, TileAddressLabel> entry : AddressRegistry.map.entrySet()) {
-				System.out.println(entry.getKey());
-			}
+
 		}
 
 		return true;
