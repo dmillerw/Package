@@ -16,7 +16,7 @@ public class TilePackage extends TileCore {
 	public boolean state = false;
 
 	public int tick = 0;
-	private final int tickMax = 40;
+	private final int tickMax = 30;
 
 	@Override
 	public void onPoke() {
