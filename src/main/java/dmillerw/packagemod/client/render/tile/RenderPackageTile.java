@@ -15,8 +15,10 @@ import org.lwjgl.opengl.GL11;
  */
 public class RenderPackageTile extends TileEntitySpecialRenderer {
 
+	private static final String BOX = "BoxFull___box_1";
 	private static final String FLAP_LEFT = "BoxFull___Fold_1";
-	private static final String FLAG_RIGHT = "BoxFull___Fold_2";
+	private static final String FLAP_RIGHT = "BoxFull___Fold_2";
+	private static final String FLAP_FLAT = "BoxFull___top";
 
 	public static final ResourceLocation TEXTURE = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package.png");
 	public static final ResourceLocation TEXTURE_TAPED = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package_taped.png");
@@ -30,37 +32,53 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 	public void renderPackageAt(TilePackage tile, double x, double y, double z, float partial) {
 		GL11.glPushMatrix();
 
-		GL11.glTranslated(x - 0.5, y - 0.09, z - 0.375);
+		GL11.glTranslated(x + 0.5, y, z + 0.5);
 
 		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
 
-		modelPackage.renderAllExcept(FLAG_RIGHT, FLAP_LEFT);
+		modelPackage.renderOnly(BOX);
 
-		// Flap rotations
-		float rotation = 0F;
+		if (tile.rotation >= 0F) {
+			// "dramatic" shadow
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-		// Left flap
-		GL11.glPushMatrix();
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glEnable(GL11.GL_BLEND);
 
-		GL11.glTranslated(0.5, 1, 0);
-		GL11.glRotated(-rotation, 0, 0, 1);
-		GL11.glTranslated(-0.5, -1, -0);
+			GL11.glColor4f(0, 0, 0, 1F - (1F * (tile.rotation / TilePackage.ROTATION_MAX)));
 
-		// Fixes flap being slightly offset
-		GL11.glTranslated(0, 0, 0.0055);
+			modelPackage.renderOnly(FLAP_FLAT);
 
-		modelPackage.renderOnly(FLAP_LEFT);
-		GL11.glPopMatrix();
+			GL11.glColor4f(1, 1, 1, 1);
 
-//		// Right flap
-		GL11.glPushMatrix();
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-		GL11.glTranslated(-0.5, 1, 0);
-		GL11.glRotated(rotation, 0, 0, 1);
-		GL11.glTranslated(0.5, -1, -0);
+			// Left flap
+			GL11.glPushMatrix();
 
-		modelPackage.renderOnly(FLAG_RIGHT);
-		GL11.glPopMatrix();
+			GL11.glTranslated(0.5, 1, 0);
+			GL11.glRotated(-tile.rotation, 0, 0, 1);
+			GL11.glTranslated(-0.5, -1, -0);
+
+			// Fixes flap being slightly offset
+			GL11.glTranslated(0, 0, 0.0055);
+
+			modelPackage.renderOnly(FLAP_LEFT);
+			GL11.glPopMatrix();
+
+			// Right flap
+			GL11.glPushMatrix();
+
+			GL11.glTranslated(-0.5, 1, 0);
+			GL11.glRotated(tile.rotation, 0, 0, 1);
+			GL11.glTranslated(0.5, -1, -0);
+
+			modelPackage.renderOnly(FLAP_RIGHT);
+			GL11.glPopMatrix();
+		} else {
+			modelPackage.renderOnly(FLAP_FLAT);
+		}
 
 		GL11.glPopMatrix();
 	}
