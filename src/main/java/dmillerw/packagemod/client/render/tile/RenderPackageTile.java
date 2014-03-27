@@ -38,7 +38,7 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 		modelPackage.renderOnly(BOX);
 
-		if (tile.rotation >= 0F) {
+		if (tile.tick > 0) {
 			// "dramatic" shadow
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 

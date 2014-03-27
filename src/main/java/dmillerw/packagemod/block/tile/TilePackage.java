@@ -1,5 +1,6 @@
 package dmillerw.packagemod.block.tile;
 
+import dmillerw.packagemod.lib.MathFX;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -10,30 +11,45 @@ public class TilePackage extends TileCore {
 	public static final float ROTATION_MIN = 0F;
 	public static final float ROTATION_MAX = 245F;
 
-	//Temp
 	public float rotation = ROTATION_MIN;
-	private boolean inverse = false;
-	private float inc = 5F;
+
+	public boolean state = false;
+
+	public int tick = 0;
+	private final int tickMax = 40;
+
+	@Override
+	public void onPoke() {
+		state = !state;
+	}
 
 	@Override
 	public void updateEntity() {
-		rotation += inverse ? -inc : inc;
+		if (worldObj.isRemote) {
+			if (state && tick < tickMax) {
+				tick++;
+			} else if (!state && tick > 0) {
+				tick -= 2;
+			}
 
-		if (rotation <= 0F) {
-			inverse = false;
-		} else if (rotation >= ROTATION_MAX) {
-			inverse = true;
+			float percent = ((float) tick / (float) tickMax);
+
+			if (state) {
+				rotation = (MathFX.berp(ROTATION_MIN, ROTATION_MAX, percent));
+			} else {
+				rotation = ((MathFX.sinerp(ROTATION_MIN, ROTATION_MAX, percent)));
+			}
 		}
 	}
 
 	@Override
 	public void readNBT(NBTTagCompound nbt) {
-
+		state = nbt.getBoolean("state");
 	}
 
 	@Override
 	public void writeNBT(NBTTagCompound nbt) {
-
+		nbt.setBoolean("state", state);
 	}
 
 }
