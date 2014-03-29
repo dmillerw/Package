@@ -85,16 +85,16 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 			modelPackage.renderOnly(FLAP_RIGHT);
 			GL11.glPopMatrix();
 		} else {
-			modelPackage.renderOnly(FLAP_FLAT);
+//			modelPackage.renderOnly(FLAP_FLAT);
 
 			if (tile.taped) {
 				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPED);
-				GL11.glTranslated(-0.5, 1.001, -0.5);
+
 				float progress = (float) tile.tapeTick / (float) tile.tapeTickMax;
 
 				Tessellator t = Tessellator.instance;
-				t.startDrawingQuads();
 
+				t.startDrawingQuads();
 				t.setNormal(0, 1, 0);
 
 				// X determines flap
@@ -102,19 +102,20 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 				// First flap (left on texture sheet)
 				TextureSection leftFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 0, 32, 16);
-				t.addVertexWithUV(0, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
-				t.addVertexWithUV(0.5, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
-				t.addVertexWithUV(0.5, 0, 0, leftFlap.getMinU(), leftFlap.getMinV());
-				t.addVertexWithUV(0, 0, 0, leftFlap.getMinU(), leftFlap.getMaxV());
+				t.addVertexWithUV(-0.5, 1.001,  0.5 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
+				t.addVertexWithUV( 0,   1.001,  0.5 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
+				t.addVertexWithUV( 0,   1.001, -0.5, leftFlap.getMinU(), leftFlap.getMinV());
+				t.addVertexWithUV(-0.5, 1.001, -0.5, leftFlap.getMinU(), leftFlap.getMaxV());
 
 				// Second flap (right on texture sheet)
 				TextureSection rightFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 64, 0, 32, 16);
-				t.addVertexWithUV(0.5, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
-				t.addVertexWithUV(1, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
-				t.addVertexWithUV(1, 0, 0, rightFlap.getMinU(), rightFlap.getMinV());
-				t.addVertexWithUV(0.5, 0, 0, rightFlap.getMinU(), rightFlap.getMaxV());
-
+				t.addVertexWithUV(0,   1.001,  0.5 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
+				t.addVertexWithUV(0.5, 1.001,  0.5 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
+				t.addVertexWithUV(0.5, 1.001, -0.5, rightFlap.getMinU(), rightFlap.getMinV());
+				t.addVertexWithUV(0,   1.001, -0.5, rightFlap.getMinU(), rightFlap.getMaxV());
 				t.draw();
+
+
 			}
 		}
 
