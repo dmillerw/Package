@@ -5,6 +5,7 @@ package dmillerw.packagemod.core.proxy;
  */
 public class CommonProxy {
 
-	public void renders() {}
+	public void registerRenders() {
+	}
 
 }

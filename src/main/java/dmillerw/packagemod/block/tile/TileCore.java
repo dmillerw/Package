@@ -1,6 +1,6 @@
 package dmillerw.packagemod.block.tile;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
+import dmillerw.packagemod.network.VanillaPacketHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -14,6 +14,7 @@ public abstract class TileCore extends TileEntity {
 
 	private static final int DATA_CLIENT = 0;
 	private static final int DATA_POKE = 1;
+	private static final int DATA_DATA = 2; // lol
 
 	public abstract void readNBT(NBTTagCompound nbt);
 
@@ -49,18 +50,32 @@ public abstract class TileCore extends TileEntity {
 			case DATA_POKE:
 				onPoke();
 				break;
+			case DATA_DATA:
+				onData(packet.data);
+				break;
 		}
 	}
 
 	public void update() {
+		// Sends the packet from getDescriptionPacket to all watching the chunk this tile is in
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	public void poke() {
-		PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, worldObj.provider.dimensionId, new Packet132TileEntityData(xCoord, yCoord, zCoord, DATA_POKE, new NBTTagCompound()));
+		Packet packet = new Packet132TileEntityData(xCoord, yCoord, zCoord, DATA_POKE, new NBTTagCompound());
+		VanillaPacketHelper.sendToAllWatchingTile(this, packet);
+	}
+
+	public void sendData(NBTTagCompound data) {
+		Packet packet = new Packet132TileEntityData(xCoord, yCoord, zCoord, DATA_DATA, data);
+		VanillaPacketHelper.sendToAllWatchingTile(this, packet);
 	}
 
 	public void onPoke() {
+
+	}
+
+	public void onData(NBTTagCompound data) {
 
 	}
 

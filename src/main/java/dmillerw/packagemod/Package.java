@@ -12,13 +12,13 @@ import net.minecraftforge.common.Configuration;
 /**
  * @author dmillerw
  */
-@Mod(modid= ModInfo.ID, name=ModInfo.NAME, version=ModInfo.VERSION)
+@Mod(modid = ModInfo.ID, name = ModInfo.NAME, version = ModInfo.VERSION)
 public class Package {
 
 	@Mod.Instance(ModInfo.ID)
 	public static Package instance;
 
-	@SidedProxy(serverSide=ModInfo.COMMON_PROXY, clientSide=ModInfo.CLIENT_PROXY)
+	@SidedProxy(serverSide = ModInfo.COMMON_PROXY, clientSide = ModInfo.CLIENT_PROXY)
 	public static CommonProxy proxy;
 
 	@Mod.EventHandler
@@ -33,7 +33,7 @@ public class Package {
 			config.save();
 		}
 
-		proxy.renders();
+		proxy.registerRenders();
 	}
 
 }

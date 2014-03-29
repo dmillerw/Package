@@ -1,8 +1,11 @@
 package dmillerw.packagemod.client.render.tile;
 
 import dmillerw.packagemod.block.tile.TilePackage;
+import dmillerw.packagemod.client.texture.TextureHelper;
+import dmillerw.packagemod.client.texture.TextureSection;
 import dmillerw.packagemod.lib.ModInfo;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -18,7 +21,10 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 	private static final String BOX = "BoxFull___box_1";
 	private static final String FLAP_LEFT = "BoxFull___Fold_1";
 	private static final String FLAP_RIGHT = "BoxFull___Fold_2";
-	private static final String FLAP_FLAT = "BoxFull___top";
+	private static final String FLAP_FLAT = "BoxFull___Top";
+
+	private static final int TEXTURE_WIDTH = 128;
+	private static final int TEXTURE_HEIGHT = 128;
 
 	public static final ResourceLocation TEXTURE = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package.png");
 	public static final ResourceLocation TEXTURE_TAPED = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package_taped.png");
@@ -34,11 +40,11 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 		GL11.glTranslated(x + 0.5, y, z + 0.5);
 
-		Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
+		Minecraft.getMinecraft().renderEngine.bindTexture(tile.taped ? tile.tapeTick == tile.tapeTickMax ? TEXTURE_TAPED : TEXTURE : TEXTURE);
 
 		modelPackage.renderOnly(BOX);
 
-		if (tile.tick > 0) {
+		if (tile.rotationTick > 0) {
 			// "dramatic" shadow
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 
@@ -47,7 +53,9 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 			GL11.glColor4f(0, 0, 0, 1F - (1F * (tile.rotation / TilePackage.ROTATION_MAX)));
 
+			GL11.glTranslated(0, -0.01F, 0);
 			modelPackage.renderOnly(FLAP_FLAT);
+			GL11.glTranslated(0, 0.01F, 0);
 
 			GL11.glColor4f(1, 1, 1, 1);
 
@@ -78,6 +86,38 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 			GL11.glPopMatrix();
 		} else {
 			modelPackage.renderOnly(FLAP_FLAT);
+
+			if (tile.taped) {
+				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPED);
+				GL11.glTranslated(-0.5, 1.001, -0.5);
+				float progress = (float) tile.tapeTick / (float) tile.tapeTickMax;
+
+				TextureHelper texture = new TextureHelper(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+
+				Tessellator t = Tessellator.instance;
+				t.startDrawingQuads();
+
+				t.setNormal(0, 1, 0);
+
+				// X determines flap
+				// Z is modified by tape progress
+
+				// First flap (left on texture sheet)
+				TextureSection leftFlap = texture.getSection(32, 0, 32, 16);
+				t.addVertexWithUV(0, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
+				t.addVertexWithUV(0.5, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
+				t.addVertexWithUV(0.5, 0, 0, leftFlap.getMinU(), leftFlap.getMinV());
+				t.addVertexWithUV(0, 0, 0, leftFlap.getMinU(), leftFlap.getMaxV());
+
+				// Second flap (right on texture sheet)
+				TextureSection rightFlap = texture.getSection(64, 0, 32, 16);
+				t.addVertexWithUV(0.5, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
+				t.addVertexWithUV(1, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
+				t.addVertexWithUV(1, 0, 0, rightFlap.getMinU(), rightFlap.getMinV());
+				t.addVertexWithUV(0.5, 0, 0, rightFlap.getMinU(), rightFlap.getMaxV());
+
+				t.draw();
+			}
 		}
 
 		GL11.glPopMatrix();
