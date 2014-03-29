@@ -13,6 +13,7 @@ public class TilePackage extends TileCore {
 
 	public static final float ROTATION_START_OFFSET = 15F;
 	public static final float ROTATION_MAX = 245F;
+	public static final float ROTATION_MAX_BLOCKED = 178F;
 
 	public static final int topTickMax = 10;
 	public static final int sideTickMax = 5;
@@ -21,6 +22,8 @@ public class TilePackage extends TileCore {
 
 	public static final int flattenTickMax = 5;
 
+	public boolean blockedLeft = false;
+	public boolean blockedRight = false;
 	public boolean open = false;
 	public boolean taped = false;
 
@@ -84,16 +87,16 @@ public class TilePackage extends TileCore {
 						rotationLeft = rotationLeftMin;
 						rotationRight = rotationRightMin;
 					} else {
-						rotationLeft = (MathFX.berp(rotationLeftMin, ROTATION_MAX, percent));
-						rotationRight = (MathFX.berp(rotationRightMin, ROTATION_MAX, percent));
+						rotationLeft = (MathFX.berp(rotationLeftMin, blockedLeft ? ROTATION_MAX_BLOCKED : ROTATION_MAX, percent));
+						rotationRight = (MathFX.berp(rotationRightMin, blockedRight ? ROTATION_MAX_BLOCKED : ROTATION_MAX, percent));
 					}
 				} else {
 					if (rotationTick <= 2) {
 						rotationLeft = rotationLeftMin;
 						rotationRight = rotationRightMin;
 					} else {
-						rotationLeft = ((MathFX.sinerp(rotationLeftMin, ROTATION_MAX, percent)));
-						rotationRight = ((MathFX.sinerp(rotationRightMin, ROTATION_MAX, percent)));
+						rotationLeft = ((MathFX.sinerp(rotationLeftMin, blockedLeft ? ROTATION_MAX_BLOCKED : ROTATION_MAX, percent)));
+						rotationRight = ((MathFX.sinerp(rotationRightMin, blockedRight ? ROTATION_MAX_BLOCKED : ROTATION_MAX, percent)));
 					}
 				}
 			}
@@ -140,6 +143,9 @@ public class TilePackage extends TileCore {
 	public void onData(NBTTagCompound nbt) {
 		if (nbt.hasKey("open")) {
 			open = nbt.getBoolean("open");
+
+			blockedLeft = !worldObj.isAirBlock(xCoord + 1, yCoord, zCoord);
+			blockedRight = !worldObj.isAirBlock(xCoord - 1, yCoord, zCoord);
 		}
 
 		if (nbt.hasKey("taped")) {
