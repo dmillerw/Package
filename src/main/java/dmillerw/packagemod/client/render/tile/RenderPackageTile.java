@@ -3,6 +3,7 @@ package dmillerw.packagemod.client.render.tile;
 import dmillerw.packagemod.block.tile.TilePackage;
 import dmillerw.packagemod.client.texture.TextureHelper;
 import dmillerw.packagemod.client.texture.TextureSection;
+import dmillerw.packagemod.lib.MathFX;
 import dmillerw.packagemod.lib.ModInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -28,6 +29,7 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 	public static final ResourceLocation TEXTURE = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package.png");
 	public static final ResourceLocation TEXTURE_TAPED = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/package_taped.png");
+	public static final ResourceLocation TEXTURE_TAPE = new ResourceLocation(ModInfo.RESOURCE_PREFIX + "textures/models/tape.png");
 
 	private IModelCustom modelPackage;
 
@@ -88,34 +90,71 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 			modelPackage.renderOnly(FLAP_FLAT);
 
 			if (tile.taped) {
-				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPED);
+				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPE);
 
-				float progress = (float) tile.tapeTick / (float) tile.tapeTickMax;
+				// Start side tape
+				if (tile.tapeTick <= TilePackage.tapeTickMax) {
+					float progress = MathFX.clamp(0, 1, ((float)tile.tapeTick / (float)TilePackage.sideTickMax));
 
-				Tessellator t = Tessellator.instance;
+					Tessellator t = Tessellator.instance;
 
-				t.startDrawingQuads();
-				t.setNormal(0, 1, 0);
+					t.startDrawingQuads();
+					t.setNormal(0, 0, -1);
 
-				// X determines flap
-				// Z is modified by tape progress
+					TextureSection side = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 96, 32, 16);
+					t.addVertexWithUV(-0.5,  0.5F + (0.5F * progress), -0.5001, side.getMaxU(), side.getMinV() + (side.getMaxV() - side.getInterpolatedV(progress)));
+					t.addVertexWithUV( 0.5,  0.5F + (0.5F * progress), -0.5001, side.getMinU(), side.getMinV() + (side.getMaxV() - side.getInterpolatedV(progress)));
+					t.addVertexWithUV( 0.5,  0.5F,                     -0.5001, side.getMinU(), side.getMaxV());
+					t.addVertexWithUV(-0.5,  0.5F,                     -0.5001, side.getMaxU(), side.getMaxV());
 
-				// First flap (left on texture sheet)
-				TextureSection leftFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 0, 32, 16);
-				t.addVertexWithUV(-0.5, 1.001, (1 * progress) - 0.5, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
-				t.addVertexWithUV( 0,   1.001, (1 * progress) - 0.5, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
-				t.addVertexWithUV( 0,   1.001, -0.5,                 leftFlap.getMinU(), leftFlap.getMinV());
-				t.addVertexWithUV(-0.5, 1.001, -0.5,                 leftFlap.getMinU(), leftFlap.getMaxV());
+					t.draw();
+				}
 
-				// Second flap (right on texture sheet)
-				TextureSection rightFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 64, 0, 32, 16);
-				t.addVertexWithUV(0,   1.001, (1 * progress) - 0.5, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
-				t.addVertexWithUV(0.5, 1.001, (1 * progress) - 0.5, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
-				t.addVertexWithUV(0.5, 1.001, -0.5,                 rightFlap.getMinU(), rightFlap.getMinV());
-				t.addVertexWithUV(0,   1.001, -0.5,                 rightFlap.getMinU(), rightFlap.getMaxV());
-				t.draw();
+				// End side tape
+				if (tile.tapeTick > TilePackage.topTickMax) {
+					float progress = MathFX.clamp(0, 1, (((float)tile.tapeTick - (float)TilePackage.sideTickMax - (float)TilePackage.topTickMax) / (float)TilePackage.sideTickMax));
 
+					Tessellator t = Tessellator.instance;
 
+					t.startDrawingQuads();
+					t.setNormal(0, 0, 1);
+
+					TextureSection side = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 96, 111, 32, 16);
+					t.addVertexWithUV( 0.5,  1F,                     0.5001, side.getMinU(), side.getMaxV());
+					t.addVertexWithUV(-0.5,  1F,                     0.5001, side.getMaxU(), side.getMaxV());
+					t.addVertexWithUV(-0.5,  1F - (0.5F * progress), 0.5001, side.getMaxU(), side.getMinV() + (side.getMaxV() - side.getInterpolatedV(progress)));
+					t.addVertexWithUV( 0.5,  1F - (0.5F * progress), 0.5001, side.getMinU(), side.getMinV() + (side.getMaxV() - side.getInterpolatedV(progress)));
+
+					t.draw();
+				}
+
+				// Top tape
+				if (tile.tapeTick > TilePackage.sideTickMax) {
+					float progress = MathFX.clamp(0F, 1F, ((float)tile.tapeTick - (float)TilePackage.sideTickMax) / (float)TilePackage.topTickMax);
+
+					Tessellator t = Tessellator.instance;
+
+					t.startDrawingQuads();
+					t.setNormal(0, 1, 0);
+
+					// X determines flap
+					// Z is modified by tape progress
+
+					// First flap (left on texture sheet)
+					TextureSection leftFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 0, 32, 16);
+					t.addVertexWithUV(-0.5, 1.001, (1 * progress) - 0.5, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
+					t.addVertexWithUV( 0,   1.001, (1 * progress) - 0.5, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
+					t.addVertexWithUV( 0,   1.001, -0.5,                 leftFlap.getMinU(), leftFlap.getMinV());
+					t.addVertexWithUV(-0.5, 1.001, -0.5,                 leftFlap.getMinU(), leftFlap.getMaxV());
+
+					// Second flap (right on texture sheet)
+					TextureSection rightFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 64, 0, 32, 16);
+					t.addVertexWithUV(0,   1.001, (1 * progress) - 0.5, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
+					t.addVertexWithUV(0.5, 1.001, (1 * progress) - 0.5, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
+					t.addVertexWithUV(0.5, 1.001, -0.5,                 rightFlap.getMinU(), rightFlap.getMinV());
+					t.addVertexWithUV(0,   1.001, -0.5,                 rightFlap.getMinU(), rightFlap.getMaxV());
+					t.draw();
+				}
 			}
 		}
 

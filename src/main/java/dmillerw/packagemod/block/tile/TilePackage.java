@@ -11,6 +11,11 @@ public class TilePackage extends TileCore {
 	public static final float ROTATION_MIN = 0F;
 	public static final float ROTATION_MAX = 245F;
 
+	public static final int tapeTickMax = 20;
+
+	public static final int topTickMax = 10;
+	public static final int sideTickMax = 5;
+
 	public boolean open = false;
 	public boolean taped = false;
 
@@ -19,8 +24,7 @@ public class TilePackage extends TileCore {
 	public int rotationTick;
 	public final int rotationTickMax = 30;
 
-	public int tapeTick = 10;
-	public final int tapeTickMax = 10;
+	public int tapeTick = topTickMax + (sideTickMax * 2);
 
 	public void toggleState() {
 		open = !open;
