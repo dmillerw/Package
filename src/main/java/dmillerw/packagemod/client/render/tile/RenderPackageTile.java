@@ -92,8 +92,6 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 				GL11.glTranslated(-0.5, 1.001, -0.5);
 				float progress = (float) tile.tapeTick / (float) tile.tapeTickMax;
 
-				TextureHelper texture = new TextureHelper(TEXTURE_WIDTH, TEXTURE_HEIGHT);
-
 				Tessellator t = Tessellator.instance;
 				t.startDrawingQuads();
 
@@ -103,14 +101,14 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 				// Z is modified by tape progress
 
 				// First flap (left on texture sheet)
-				TextureSection leftFlap = texture.getSection(32, 0, 32, 16);
+				TextureSection leftFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 0, 32, 16);
 				t.addVertexWithUV(0, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMaxV());
 				t.addVertexWithUV(0.5, 0, 1 * progress, leftFlap.getInterpolatedU(progress), leftFlap.getMinV());
 				t.addVertexWithUV(0.5, 0, 0, leftFlap.getMinU(), leftFlap.getMinV());
 				t.addVertexWithUV(0, 0, 0, leftFlap.getMinU(), leftFlap.getMaxV());
 
 				// Second flap (right on texture sheet)
-				TextureSection rightFlap = texture.getSection(64, 0, 32, 16);
+				TextureSection rightFlap = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 64, 0, 32, 16);
 				t.addVertexWithUV(0.5, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMaxV());
 				t.addVertexWithUV(1, 0, 1 * progress, rightFlap.getInterpolatedU(progress), rightFlap.getMinV());
 				t.addVertexWithUV(1, 0, 0, rightFlap.getMinU(), rightFlap.getMinV());
