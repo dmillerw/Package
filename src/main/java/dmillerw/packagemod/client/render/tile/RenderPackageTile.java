@@ -89,11 +89,11 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 		} else {
 			modelPackage.renderOnly(FLAP_FLAT);
 
-			if (tile.taped) {
+			if (tile.taped && tile.tapeTick < TilePackage.tapeTickMax) {
 				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPE);
 
 				// Start side tape
-				if (tile.tapeTick <= TilePackage.tapeTickMax) {
+				if (tile.tapeTick < TilePackage.tapeTickMax) {
 					float progress = MathFX.clamp(0, 1, ((float)tile.tapeTick / (float)TilePackage.sideTickMax));
 
 					Tessellator t = Tessellator.instance;
