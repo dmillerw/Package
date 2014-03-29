@@ -46,14 +46,14 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 
 		modelPackage.renderOnly(BOX);
 
-		if (tile.rotationTick > 0) {
+		if (!tile.taped || tile.flattenTick < TilePackage.flattenTickMax) {
 			// "dramatic" shadow
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glEnable(GL11.GL_BLEND);
 
-			GL11.glColor4f(0, 0, 0, 1F - (1F * (tile.rotation / TilePackage.ROTATION_MAX)));
+			GL11.glColor4f(0, 0, 0, 1F - (1F * (((tile.rotationLeft + tile.rotationRight) / 2) / TilePackage.ROTATION_MAX)));
 
 			GL11.glTranslated(0, -0.01F, 0);
 			modelPackage.renderOnly(FLAP_FLAT);
@@ -68,7 +68,7 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 			GL11.glPushMatrix();
 
 			GL11.glTranslated(0.5, 1, 0);
-			GL11.glRotated(-tile.rotation, 0, 0, 1);
+			GL11.glRotated(-tile.rotationLeft, 0, 0, 1);
 			GL11.glTranslated(-0.5, -1, -0);
 
 			// Fixes flap being slightly offset
@@ -81,7 +81,7 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 			GL11.glPushMatrix();
 
 			GL11.glTranslated(-0.5, 1, 0);
-			GL11.glRotated(tile.rotation, 0, 0, 1);
+			GL11.glRotated(tile.rotationRight, 0, 0, 1);
 			GL11.glTranslated(0.5, -1, -0);
 
 			modelPackage.renderOnly(FLAP_RIGHT);
@@ -89,12 +89,12 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 		} else {
 			modelPackage.renderOnly(FLAP_FLAT);
 
-			if (tile.taped && tile.tapeTick < TilePackage.tapeTickMax) {
+			if (tile.tapeTick < TilePackage.tapeTickMax) {
 				Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_TAPE);
 
 				// Start side tape
 				if (tile.tapeTick < TilePackage.tapeTickMax) {
-					float progress = MathFX.clamp(0, 1, ((float)tile.tapeTick / (float)TilePackage.sideTickMax));
+					float progress = MathFX.clamp(0, 1, ((float) tile.tapeTick / (float) TilePackage.sideTickMax));
 
 					Tessellator t = Tessellator.instance;
 
@@ -119,7 +119,7 @@ public class RenderPackageTile extends TileEntitySpecialRenderer {
 					t.startDrawingQuads();
 					t.setNormal(0, 0, 1);
 
-					TextureSection side = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 96, 111, 32, 16);
+					TextureSection side = TextureHelper.getSection(TEXTURE_WIDTH, TEXTURE_HEIGHT, 96, 112, 32, 16);
 					t.addVertexWithUV( 0.5,  1F,                     0.5001, side.getMinU(), side.getMaxV());
 					t.addVertexWithUV(-0.5,  1F,                     0.5001, side.getMaxU(), side.getMaxV());
 					t.addVertexWithUV(-0.5,  1F - (0.5F * progress), 0.5001, side.getMaxU(), side.getMinV() + (side.getMaxV() - side.getInterpolatedV(progress)));
