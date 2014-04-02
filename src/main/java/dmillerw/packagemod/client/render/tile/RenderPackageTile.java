@@ -19,10 +19,10 @@ import org.lwjgl.opengl.GL11;
  */
 public class RenderPackageTile extends TileEntitySpecialRenderer {
 
-	private static final String BOX = "BoxFull___box_1";
-	private static final String FLAP_LEFT = "BoxFull___Fold_1";
-	private static final String FLAP_RIGHT = "BoxFull___Fold_2";
-	private static final String FLAP_FLAT = "BoxFull___Top";
+	public static final String BOX = "BoxFull___box_1";
+	public static final String FLAP_LEFT = "BoxFull___Fold_1";
+	public static final String FLAP_RIGHT = "BoxFull___Fold_2";
+	public static final String FLAP_FLAT = "BoxFull___Top";
 
 	private static final int TEXTURE_WIDTH = 128;
 	private static final int TEXTURE_HEIGHT = 128;

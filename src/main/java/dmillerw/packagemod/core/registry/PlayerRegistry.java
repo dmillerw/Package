@@ -28,4 +28,8 @@ public class PlayerRegistry {
 		return map.get(player);
 	}
 
+	public static String[] getValidPlayers() {
+		return map.keySet().toArray(new String[map.keySet().size()]);
+	}
+
 }

@@ -2,6 +2,7 @@ package dmillerw.packagemod.block;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import dmillerw.packagemod.block.item.ItemDoormat;
 import dmillerw.packagemod.block.tile.TileDoormat;
 import dmillerw.packagemod.block.tile.TilePackage;
 import dmillerw.packagemod.core.IDAllocator;
@@ -34,7 +35,7 @@ public class HandlerBlock {
 		GameRegistry.registerBlock(blockPackage, "cardboard_box");
 		GameRegistry.registerTileEntity(TilePackage.class, "cardboard_box");
 		blockDoormat = new BlockDoormat(blockDoormatID).setUnlocalizedName("doormat");
-		GameRegistry.registerBlock(blockDoormat, "doormat");
+		GameRegistry.registerBlock(blockDoormat, ItemDoormat.class, "doormat");
 		GameRegistry.registerTileEntity(TileDoormat.class, "doormat");
 
 		LanguageRegistry.addName(blockPackage, "Cardboard Box");
